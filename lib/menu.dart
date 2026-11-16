@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/project_form.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 
 class ItemHomepage {
@@ -123,6 +124,10 @@ class ItemCard extends StatelessWidget {
             ..showSnackBar(
               SnackBar(content: Text("You pressed the ${item.name} button!")),
             );
+          
+          if (item.name == 'Add Project') {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ProjectFormPage()));
+          }
         },
         child: Container(
           padding: const EdgeInsets.all(8),
