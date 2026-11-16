@@ -11,7 +11,7 @@ class ProjectFormPage extends StatefulWidget {
 class _ProjectFormPageState extends State<ProjectFormPage> {
   final _formKey = GlobalKey<FormState>();
 
-  String _projectName = "";
+  String _title = "";
   String _description = "";
   String _category = "Web Development"; // default
   String _technologies = "";
@@ -53,12 +53,12 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                   ),
                   onChanged: (String? value) {
                     setState(() {
-                      _projectName = value!;
+                      _title = value!;
                     });
                   },
                   validator: (String? value) {
                     if (value == null || value.trim().isEmpty) {
-                      return "Enter a project name.";
+                      return "Enter a project title.";
                     }
                     return null;
                   },
@@ -176,7 +176,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Project Name: $_projectName'),
+                                    Text('Title: $_title'),
                                     Text('Description: $_description'),
                                     Text('Category: $_category'),
                                     Text('Technologies: $_technologies'),

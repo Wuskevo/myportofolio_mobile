@@ -1,14 +1,14 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 
-class ExperienceForm extends StatefulWidget {
-  const ExperienceForm({super.key});
+class ExperienceFormPage extends StatefulWidget {
+  const ExperienceFormPage({super.key});
 
   @override
-  State<ExperienceForm> createState() => _ExperienceFormState();
+  State<ExperienceFormPage> createState() => _ExperienceFormState();
 }
 
-class _ExperienceFormState extends State<ExperienceForm> {
+class _ExperienceFormState extends State<ExperienceFormPage> {
   final _formKey = GlobalKey<FormState>();
 
   String _title = "";
@@ -61,7 +61,7 @@ class _ExperienceFormState extends State<ExperienceForm> {
                   },
                   validator: (String? value) {
                     if (value == null || value.trim().isEmpty) {
-                      return "Enter a title for the experience.";
+                      return "Enter an experience title.";
                     }
                     return null;
                   },
@@ -87,7 +87,7 @@ class _ExperienceFormState extends State<ExperienceForm> {
                   },
                   validator: (String? value) {
                     if (value == null || value.trim().isEmpty) {
-                      return "Enter a description for the experience.";
+                      return "Enter an experience description.";
                     }
                     return null;
                   },
@@ -190,7 +190,7 @@ class _ExperienceFormState extends State<ExperienceForm> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Experience Name: $_title'),
+                                    Text('Title: $_title'),
                                     Text('Description: $_description'),
                                     Text('Category: $_category'),
                                     Text('Link: $_thumbnailURL'),
