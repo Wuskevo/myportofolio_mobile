@@ -37,7 +37,7 @@ class LeftDrawer extends StatelessWidget {
             title: const Text('Home'),
             // Navigate to the portfolio home screen
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => MyHomePage()),
               );
@@ -48,7 +48,7 @@ class LeftDrawer extends StatelessWidget {
             title: const Text('Add Project'),
             // Navigate to the Add Project screen
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProjectFormPage()),
               );
@@ -59,7 +59,7 @@ class LeftDrawer extends StatelessWidget {
             title: const Text('Add Experience'),
             // Navigate to the Add Experience screen
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ExperienceFormPage()),
               );
