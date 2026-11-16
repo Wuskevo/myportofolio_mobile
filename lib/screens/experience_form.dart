@@ -15,7 +15,7 @@ class _ExperienceFormState extends State<ExperienceFormPage> {
   String _description = "";
   String _category = "Internship"; // default
   String _thumbnailURL = "";
-  DateTime? _startDate; // TODO: this shouldn't be nullable i think
+  DateTime _startDate = DateTime.now();
   DateTime? _endDate;
 
   final List<String> _categories = [
@@ -146,24 +146,30 @@ class _ExperienceFormState extends State<ExperienceFormPage> {
                 child: InputDatePickerFormField(
                   firstDate: DateTime(2007),
                   lastDate: DateTime(2126),
-                  onDateSaved: (DateTime? value) {
+                  onDateSubmitted: (DateTime? value) {
                     setState(() {
-                      _startDate = value;
+                      _startDate = value!;
                     });
                   },
                 ),
               ),
 
               // === Experience End Date ===
-              // TODO: There should be validation so that start <= end if start and end not null
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: InputDatePickerFormField(
                   firstDate: DateTime(2007),
                   lastDate: DateTime(2126),
-                  onDateSaved: (DateTime? value) {
+
+                  onDateSubmitted: (DateTime? value) {
                     setState(() {
-                      _endDate = value;
+                      if (value == null) {
+                        _endDate = value;
+                      } else if (value.isAfter(_startDate)) {
+                        _endDate = value;
+                      } else {
+                        _endDate = _startDate;
+                      }
                     });
                   },
                 ),
