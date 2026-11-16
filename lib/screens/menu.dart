@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
-import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:myportofolio_mobile/widgets/item_card.dart';
 
 class ItemHomepage {
   final String name;
@@ -21,6 +21,8 @@ class MyHomePage extends StatelessWidget {
     ItemHomepage("View Projects", Icons.folder, Colors.blue),
     ItemHomepage("Add Project", Icons.add_circle, Colors.green),
     ItemHomepage("Logout", Icons.logout, Colors.red),
+    ItemHomepage("View Experiences", Icons.folder, Colors.blue),
+    ItemHomepage("Add Experience", Icons.add_circle, Colors.green),
   ];
 
   @override

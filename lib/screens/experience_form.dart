@@ -15,7 +15,7 @@ class _ExperienceFormState extends State<ExperienceFormPage> {
   String _description = "";
   String _category = "Internship"; // default
   String _thumbnailURL = "";
-  DateTime? _startDate;
+  DateTime? _startDate; // TODO: this shouldn't be nullable i think
   DateTime? _endDate;
 
   final List<String> _categories = [
@@ -155,6 +155,7 @@ class _ExperienceFormState extends State<ExperienceFormPage> {
               ),
 
               // === Experience End Date ===
+              // TODO: There should be validation so that start <= end if start and end not null
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: InputDatePickerFormField(
