@@ -2,6 +2,12 @@
 
 A new Flutter project.
 
+## Don't Forget
+
+After any edits to data model classes (e.g., adding new attribute to project.dart), run:
+`dart run build_runner build`
+so the generated data model class will have the latest update.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
@@ -211,11 +217,11 @@ No AI was used to write the code or to copy and paste blindly. I used Claude onl
 
 ### 1. Differences between `Navigator.push()`, `Navigator.pushReplacement()` and `Navigator.pop()`
 
-| Method                         | What it does                                                            | Back button afterwards          |
-| ------------------------------ | ----------------------------------------------------------------------- | ------------------------------- |
-| `Navigator.push()`             | Puts a new route on top of the stack; the old screen stays underneath   | Returns to the previous screen  |
-| `Navigator.pushReplacement()`  | Replaces the current route with a new one; the old screen is removed    | Cannot return to the old screen |
-| `Navigator.pop()`              | Removes the top route and reveals the one below it                      | Same effect as pressing Back    |
+| Method                        | What it does                                                          | Back button afterwards          |
+| ----------------------------- | --------------------------------------------------------------------- | ------------------------------- |
+| `Navigator.push()`            | Puts a new route on top of the stack; the old screen stays underneath | Returns to the previous screen  |
+| `Navigator.pushReplacement()` | Replaces the current route with a new one; the old screen is removed  | Cannot return to the old screen |
+| `Navigator.pop()`             | Removes the top route and reveals the one below it                    | Same effect as pressing Back    |
 
 The action card on the home screen opens the form with `Navigator.push()`, so the system Back button returns to the home screen. The **Home** option in the drawer uses `Navigator.pushReplacement()` to go to `MyHomePage`, which replaces the form instead of stacking another home screen on top of it.
 
@@ -249,4 +255,4 @@ The form is a `Form` inside a `SingleChildScrollView`, with `Padding` around a `
 - `validator` is a function on each field that returns an error message if the value is invalid, or `null` if it is fine.
 - `validate()` runs every field's `validator`, shows the error text next to the invalid fields, and returns `true` only if all of them pass. Only then is the summary `AlertDialog` shown.
 
-Example of a value the form rejects: a required field containing only spaces (`"   "`), or an end date earlier than the start date. Choosing an input widget or keyboard type alone is insufficient because it only controls *how* the user enters data, not *what* is valid. A text field still accepts spaces or pasted text, and a date picker cannot know that one date must come after another. Only a `validator` can enforce these rules.
+Example of a value the form rejects: a required field containing only spaces (`"   "`), or an end date earlier than the start date. Choosing an input widget or keyboard type alone is insufficient because it only controls _how_ the user enters data, not _what_ is valid. A text field still accepts spaces or pasted text, and a date picker cannot know that one date must come after another. Only a `validator` can enforce these rules.
