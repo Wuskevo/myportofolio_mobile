@@ -1,5 +1,10 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:provider/provider.dart';
+import 'package:myportofolio_mobile/models/project.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
 
 class ProjectFormPage extends StatefulWidget {
   const ProjectFormPage({super.key});
@@ -16,6 +21,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
   String _category = "Web Development"; // default
   String _technologies = "";
   String _projectLink = "";
+  String _projectImageUrl = "";
 
   final List<String> _categories = [
     'Web Development',
@@ -134,6 +140,10 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                       _technologies = value!;
                     });
                   },
+                  validator: (String? value) =>
+                      (value == null || value.trim().isEmpty)
+                      ? "Enter the tech stack."
+                      : null,
                 ),
               ),
 
@@ -142,8 +152,8 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: "Project URL (optional)",
-                    labelText: "Project Link",
+                    hintText: "https://github.com/you/project",
+                    labelText: "Project URL",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
@@ -152,6 +162,48 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                     setState(() {
                       _projectLink = value!;
                     });
+                  },
+                  validator: (String? value) {
+                    final text = value?.trim() ?? '';
+                    if (text.isEmpty) return "Enter a project URL.";
+                    final uri = Uri.tryParse(text);
+                    if (uri == null ||
+                        !(uri.scheme == 'http' || uri.scheme == 'https') ||
+                        uri.host.isEmpty) {
+                      return "Enter a valid URL (http:// or https://).";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+
+              // === Project Image URL (optional) ===
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  keyboardType: TextInputType.url,
+                  decoration: InputDecoration(
+                    hintText: "https://example.com/image.png",
+                    labelText: "Project Image URL (Optional)",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _projectImageUrl = value!;
+                    });
+                  },
+                  validator: (String? value) {
+                    final text = value?.trim() ?? '';
+                    if (text.isEmpty) return null; // optional
+                    final uri = Uri.tryParse(text);
+                    if (uri == null ||
+                        !(uri.scheme == 'http' || uri.scheme == 'https') ||
+                        uri.host.isEmpty) {
+                      return "Enter a valid URL (http:// or https://).";
+                    }
+                    return null;
                   },
                 ),
               ),
@@ -165,8 +217,27 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(Colors.indigo),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
+                    onPressed: () async {
+                      if (!_formKey.currentState!.validate()) return;
+                      final bool ok = await ensureLoggedIn(context);
+                      if (!ok || !context.mounted) return;
+                      final token = context.read<AuthState>().token!;
+                      final apiClient = context.read<ApiClient>();
+                      final authState = context.read<AuthState>();
+                      final messenger = ScaffoldMessenger.of(context);
+
+                      try {
+                        await apiClient.createProject(
+                          Project(
+                            title: _title.trim(),
+                            description: _description.trim(),
+                            techStack: _technologies.trim(),
+                            projectUrl: _projectLink.trim(),
+                            projectImageUrl: _projectImageUrl.trim(),
+                          ),
+                          token: token,
+                        );
+                        if (!context.mounted) return;
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -180,7 +251,8 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                                     Text('Description: $_description'),
                                     Text('Category: $_category'),
                                     Text('Technologies: $_technologies'),
-                                    Text('Link: $_projectLink'),
+                                    Text('URL: $_projectLink'),
+                                    Text('Image URL: $_projectImageUrl'),
                                   ],
                                 ),
                               ),
@@ -196,6 +268,25 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                             );
                           },
                         );
+                      } on ApiException catch (e) {
+                        if (e.statusCode == 401) {
+                          await authState.logout();
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Session expired. Please log in again.',
+                              ),
+                            ),
+                          );
+                        } else {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Failed to save (status ${e.statusCode}).',
+                              ),
+                            ),
+                          );
+                        }
                       }
                     },
                     child: const Text(

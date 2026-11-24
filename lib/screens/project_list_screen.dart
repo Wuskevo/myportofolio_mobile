@@ -65,9 +65,6 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
           }
 
           final projects = snapshot.data ?? const <Project>[];
-          // TODO: When projects is empty, return a centered 'No projects found.' message
-          // wrapped in RefreshIndicator + SingleChildScrollView(physics: AlwaysScrollableScrollPhysics())
-          // so pull-to-refresh still works on an empty list.
           if (projects.isEmpty) {
             return RefreshIndicator(
               onRefresh: _reload,
