@@ -1,5 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/project.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/widgets/delete_item_action.dart';
+import 'package:provider/provider.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   const ProjectDetailScreen({required this.project, super.key});
@@ -8,8 +11,22 @@ class ProjectDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final projectId = project.id;
     return Scaffold(
-      appBar: AppBar(title: Text(project.title)),
+      appBar: AppBar(
+        title: Text(project.title),
+        actions: [
+          DeleteItemAction(
+            itemName: project.title,
+            onDelete: projectId == null
+                ? null
+                : (token) => context.read<ApiClient>().deleteProject(
+                    projectId,
+                    token: token,
+                  ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

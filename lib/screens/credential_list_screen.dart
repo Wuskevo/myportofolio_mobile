@@ -29,6 +29,32 @@ class _CredentialListScreenState extends State<CredentialListScreen> {
     await future;
   }
 
+  Future<void> _openCredential(Credential credential) async {
+    final deleted = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CredentialDetailScreen(credential: credential),
+      ),
+    );
+    if (!mounted || deleted != true) return;
+
+    try {
+      await _reload();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Deleted, but could not refresh credentials: $error'),
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('${credential.title} deleted.')));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,15 +133,7 @@ class _CredentialListScreenState extends State<CredentialListScreen> {
                     ),
                     isThreeLine: true,
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              CredentialDetailScreen(credential: credential),
-                        ),
-                      );
-                    },
+                    onTap: () => _openCredential(credential),
                   ),
                 );
               },

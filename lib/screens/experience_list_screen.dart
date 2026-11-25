@@ -29,6 +29,32 @@ class _ExperienceListScreenState extends State<ExperienceListScreen> {
     await future;
   }
 
+  Future<void> _openExperience(Experience experience) async {
+    final deleted = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ExperienceDetailScreen(experience: experience),
+      ),
+    );
+    if (!mounted || deleted != true) return;
+
+    try {
+      await _reload();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Deleted, but could not refresh experiences: $error'),
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('${experience.title} deleted.')));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,15 +133,7 @@ class _ExperienceListScreenState extends State<ExperienceListScreen> {
                     ),
                     isThreeLine: true,
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ExperienceDetailScreen(experience: experience),
-                        ),
-                      );
-                    },
+                    onTap: () => _openExperience(experience),
                   ),
                 );
               },

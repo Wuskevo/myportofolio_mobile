@@ -1,7 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/credential.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/widgets/delete_item_action.dart';
+import 'package:provider/provider.dart';
 
 String _fmt(DateTime d) => d.toLocal().toIso8601String().split('T').first;
+
 class CredentialDetailScreen extends StatelessWidget {
   const CredentialDetailScreen({required this.credential, super.key});
 
@@ -9,13 +13,27 @@ class CredentialDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final credentialId = credential.id;
     final expiry = credential.expiryDate;
     final validity =
         '${_fmt(credential.dateReceived)} - ${expiry == null ? 'No expiry' : _fmt(expiry)}';
     final image = credential.image ?? '';
 
     return Scaffold(
-      appBar: AppBar(title: Text(credential.title)),
+      appBar: AppBar(
+        title: Text(credential.title),
+        actions: [
+          DeleteItemAction(
+            itemName: credential.title,
+            onDelete: credentialId == null
+                ? null
+                : (token) => context.read<ApiClient>().deleteCredential(
+                    credentialId,
+                    token: token,
+                  ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -57,6 +75,7 @@ class CredentialDetailScreen extends StatelessWidget {
     );
   }
 }
+
 class _InfoRow extends StatelessWidget {
   const _InfoRow({required this.label, required this.value});
 

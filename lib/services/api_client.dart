@@ -60,6 +60,9 @@ class ApiClient {
     return Project.fromJson(decoded);
   }
 
+  Future<void> deleteProject(String id, {required String token}) =>
+      _delete('/api/v1/projects/$id/', token: token);
+
   Future<List<Experience>> getExperiences() async {
     final response = await _client.get(
       _uri('/api/v1/experiences/'),
@@ -92,6 +95,9 @@ class ApiClient {
 
     return Experience.fromJson(decoded);
   }
+
+  Future<void> deleteExperience(String id, {required String token}) =>
+      _delete('/api/v1/experiences/$id/', token: token);
 
   Future<List<Credential>> getCredentials() async {
     final response = await _client.get(
@@ -126,6 +132,9 @@ class ApiClient {
     return Credential.fromJson(decoded);
   }
 
+  Future<void> deleteCredential(String id, {required String token}) =>
+      _delete('/api/v1/credentials/$id/', token: token);
+
   Future<String> obtainToken(String username, String password) async {
     final response = await _client.post(
       _uri('/api/v1/auth/token/'),
@@ -143,6 +152,14 @@ class ApiClient {
   Future<void> logout({required String token}) async {
     final response = await _client.post(
       _uri('/api/v1/auth/logout/'),
+      headers: {'Accept': 'application/json', 'Authorization': 'Token $token'},
+    );
+    _ensureSuccess(response);
+  }
+
+  Future<void> _delete(String path, {required String token}) async {
+    final response = await _client.delete(
+      _uri(path),
       headers: {'Accept': 'application/json', 'Authorization': 'Token $token'},
     );
     _ensureSuccess(response);

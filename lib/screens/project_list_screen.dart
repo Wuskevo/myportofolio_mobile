@@ -29,6 +29,30 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
     await future;
   }
 
+  Future<void> _openProject(Project project) async {
+    final deleted = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => ProjectDetailScreen(project: project)),
+    );
+    if (!mounted || deleted != true) return;
+
+    try {
+      await _reload();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Deleted, but could not refresh projects: $error'),
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('${project.title} deleted.')));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,14 +131,7 @@ class _ProjectListScreenState extends State<ProjectListScreen> {
                     ),
                     isThreeLine: true,
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProjectDetailScreen(project: project),
-                        ),
-                      );
-                    },
+                    onTap: () => _openProject(project),
                   ),
                 );
               },

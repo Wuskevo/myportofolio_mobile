@@ -1,5 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/experience.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/widgets/delete_item_action.dart';
+import 'package:provider/provider.dart';
 
 String _fmt(DateTime d) => d.toLocal().toIso8601String().split('T').first;
 
@@ -10,12 +13,26 @@ class ExperienceDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final experienceId = experience.id;
     final ended = experience.endedAt;
     final period =
         '${_fmt(experience.startedAt)} - ${ended == null ? 'Present' : _fmt(ended)}';
 
     return Scaffold(
-      appBar: AppBar(title: Text(experience.title)),
+      appBar: AppBar(
+        title: Text(experience.title),
+        actions: [
+          DeleteItemAction(
+            itemName: experience.title,
+            onDelete: experienceId == null
+                ? null
+                : (token) => context.read<ApiClient>().deleteExperience(
+                    experienceId,
+                    token: token,
+                  ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

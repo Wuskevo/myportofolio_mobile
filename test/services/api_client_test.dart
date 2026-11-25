@@ -208,6 +208,70 @@ void main() {
       expect(created.title, 'Flutter Certificate');
     });
   });
+
+  group('delete requests', () {
+    test(
+      'deletes projects with the item ID and auth token',
+      () => _expectDeleteRequest(
+        path: '/api/v1/projects/project-1/',
+        delete: (apiClient) =>
+            apiClient.deleteProject('project-1', token: 'test-token'),
+      ),
+    );
+
+    test(
+      'deletes experiences with the item ID and auth token',
+      () => _expectDeleteRequest(
+        path: '/api/v1/experiences/experience-1/',
+        delete: (apiClient) =>
+            apiClient.deleteExperience('experience-1', token: 'test-token'),
+      ),
+    );
+
+    test(
+      'deletes credentials with the item ID and auth token',
+      () => _expectDeleteRequest(
+        path: '/api/v1/credentials/credential-1/',
+        delete: (apiClient) =>
+            apiClient.deleteCredential('credential-1', token: 'test-token'),
+      ),
+    );
+
+    test('surfaces a forbidden response as ApiException', () async {
+      final mockClient = MockClient(
+        (_) async => http.Response('Permission denied', 403),
+      );
+      addTearDown(mockClient.close);
+      final apiClient = ApiClient(client: mockClient, baseUrl: baseUrl);
+
+      await expectLater(
+        apiClient.deleteProject('project-1', token: 'test-token'),
+        throwsA(
+          isA<ApiException>()
+              .having((error) => error.statusCode, 'statusCode', 403)
+              .having((error) => error.message, 'message', 'Permission denied'),
+        ),
+      );
+    });
+  });
+}
+
+Future<void> _expectDeleteRequest({
+  required String path,
+  required Future<void> Function(ApiClient apiClient) delete,
+}) async {
+  const baseUrl = 'https://api.example.test';
+  final mockClient = MockClient((request) async {
+    expect(request.method, 'DELETE');
+    expect(request.url.toString(), '$baseUrl$path');
+    expect(request.headers['accept'], 'application/json');
+    expect(request.headers['authorization'], 'Token test-token');
+    return http.Response('', 204);
+  });
+  addTearDown(mockClient.close);
+  final apiClient = ApiClient(client: mockClient, baseUrl: baseUrl);
+
+  await delete(apiClient);
 }
 
 DateTime _utcDate(int year, int month, int day) =>
