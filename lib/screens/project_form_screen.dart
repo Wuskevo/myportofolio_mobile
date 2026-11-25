@@ -278,6 +278,8 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                               ),
                             ),
                           );
+                          if (!context.mounted) return;
+                          await ensureLoggedIn(context);
                         } else {
                           messenger.showSnackBar(
                             SnackBar(
@@ -287,6 +289,12 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                             ),
                           );
                         }
+                      } catch (e) {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text('Could not reach the server: $e'),
+                          ),
+                        );
                       }
                     },
                     child: const Text(
