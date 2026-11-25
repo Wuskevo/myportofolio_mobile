@@ -24,9 +24,9 @@ class MyHomePage extends StatelessWidget {
     ItemHomepage("View Experiences", Icons.calendar_month, Colors.blue),
     ItemHomepage("View Credentials", Icons.workspace_premium, Colors.blue),
     ItemHomepage("Add Project", Icons.add_circle, Colors.green),
-    
+
     ItemHomepage("Add Experience", Icons.add_circle, Colors.green),
-    
+
     ItemHomepage("Add Credential", Icons.add_circle, Colors.green),
   ];
 
