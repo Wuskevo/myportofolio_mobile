@@ -3,7 +3,13 @@
     <application
         android:label="myportofolio_mobile"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"> 
+        <!-- Since Android 9, plain http:// traffic is blocked by default. 
+            Without this attribute, the Android emulator 
+            (using http://10.0.2.2:8000) fails with a 
+            "Cleartext HTTP traffic not permitted" 
+            error, even though the INTERNET permission is present. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
