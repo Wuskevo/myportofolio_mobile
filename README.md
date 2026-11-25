@@ -1,5 +1,5 @@
 # MyPortfolio Mobile
-
+ 
 [![CI](https://github.com/Wuskevo/myportofolio_mobile/actions/workflows/main.yaml/badge.svg)](https://github.com/Wuskevo/myportofolio_mobile/actions/workflows/main.yaml)
 
 Flutter client for the MyPortfolio Django REST Framework backend.

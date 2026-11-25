@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:provider/provider.dart';
 
 class ItemHomepage {
   final String name;
@@ -19,11 +21,12 @@ class MyHomePage extends StatelessWidget {
 
   final List<ItemHomepage> items = [
     ItemHomepage("View Projects", Icons.folder, Colors.blue),
-    ItemHomepage("Add Project", Icons.add_circle, Colors.green),
-    ItemHomepage("Logout", Icons.logout, Colors.red),
-    ItemHomepage("View Experiences", Icons.folder, Colors.blue),
-    ItemHomepage("Add Experience", Icons.add_circle, Colors.green),
+    ItemHomepage("View Experiences", Icons.calendar_month, Colors.blue),
     ItemHomepage("View Credentials", Icons.workspace_premium, Colors.blue),
+    ItemHomepage("Add Project", Icons.add_circle, Colors.green),
+    
+    ItemHomepage("Add Experience", Icons.add_circle, Colors.green),
+    
     ItemHomepage("Add Credential", Icons.add_circle, Colors.green),
   ];
 
@@ -36,6 +39,30 @@ class MyHomePage extends StatelessWidget {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          IconButton(
+            tooltip: 'Logout',
+            color: Colors.white,
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              final auth = context.read<AuthState>();
+              final messenger = ScaffoldMessenger.of(context);
+              if (!auth.isLoggedIn) {
+                messenger
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    const SnackBar(content: Text('You are not logged in.')),
+                  );
+                return;
+              }
+              await auth.logout();
+              if (!context.mounted) return;
+              messenger
+                ..hideCurrentSnackBar()
+                ..showSnackBar(const SnackBar(content: Text('Logged out')));
+            },
+          ),
+        ],
       ),
       drawer: const LeftDrawer(), // drawer
       body: Padding(

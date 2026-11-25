@@ -6,8 +6,6 @@ import 'package:myportofolio_mobile/screens/experience_form_screen.dart';
 import 'package:myportofolio_mobile/screens/project_form_screen.dart';
 import 'package:myportofolio_mobile/screens/home_page_screen.dart';
 import 'package:myportofolio_mobile/widgets/auth_guard.dart';
-import 'package:myportofolio_mobile/services/auth_state.dart';
-import 'package:provider/provider.dart';
 import 'package:myportofolio_mobile/screens/project_list_screen.dart';
 
 class ItemCard extends StatelessWidget {
@@ -63,21 +61,6 @@ class ItemCard extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (_) => const CredentialFormPage()),
               );
-            case ('Logout'):
-              final auth = context.read<AuthState>();
-              final messenger = ScaffoldMessenger.of(context);
-              if (!auth.isLoggedIn) {
-                messenger
-                  ..hideCurrentSnackBar()
-                  ..showSnackBar(
-                    const SnackBar(content: Text('You are not logged in.')),
-                  );
-                return;
-              }
-              await auth.logout();
-              messenger
-                ..hideCurrentSnackBar()
-                ..showSnackBar(const SnackBar(content: Text('Logged out')));
           }
         },
         child: Container(
