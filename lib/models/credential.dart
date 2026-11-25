@@ -9,7 +9,6 @@ String? _nullableDateToJson(DateTime? date) =>
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Credential {
   const Credential({
-    
     required this.title,
     required this.description,
     required this.category,
