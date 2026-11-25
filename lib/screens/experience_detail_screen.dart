@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/experience.dart';
 
+String _fmt(DateTime d) => d.toLocal().toIso8601String().split('T').first;
+
 class ExperienceDetailScreen extends StatelessWidget {
   const ExperienceDetailScreen({required this.experience, super.key});
 
@@ -8,7 +10,9 @@ class ExperienceDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String period = '${experience.startedAt.toString()} - ${(experience.endedAt?.toString() ?? "-")}'; 
+    final ended = experience.endedAt;
+    final period =
+        '${_fmt(experience.startedAt)} - ${ended == null ? 'Present' : _fmt(ended)}';
 
     return Scaffold(
       appBar: AppBar(title: Text(experience.title)),
@@ -24,7 +28,7 @@ class ExperienceDetailScreen extends StatelessWidget {
                   experience.thumbnail,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => SizedBox(
+                  errorBuilder: (context, error, stackTrace) => const SizedBox(
                     height: 120,
                     child: Center(child: Icon(Icons.broken_image, size: 48)),
                   ),

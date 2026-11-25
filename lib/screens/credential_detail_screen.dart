@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/credential.dart';
 
+String _fmt(DateTime d) => d.toLocal().toIso8601String().split('T').first;
 class CredentialDetailScreen extends StatelessWidget {
   const CredentialDetailScreen({required this.credential, super.key});
 
@@ -8,8 +9,10 @@ class CredentialDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String period =
-        '${credential.dateReceived.toString()} - ${(credential.expiryDate?.toString() ?? "-")}';
+    final expiry = credential.expiryDate;
+    final validity =
+        '${_fmt(credential.dateReceived)} - ${expiry == null ? 'No expiry' : _fmt(expiry)}';
+    final image = credential.image ?? '';
 
     return Scaffold(
       appBar: AppBar(title: Text(credential.title)),
@@ -18,14 +21,14 @@ class CredentialDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if ((credential.image ?? '').isNotEmpty) ...[
+            if (image.isNotEmpty) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  credential.image!,
+                  image,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => SizedBox(
+                  errorBuilder: (context, error, stackTrace) => const SizedBox(
                     height: 120,
                     child: Center(child: Icon(Icons.broken_image, size: 48)),
                   ),
@@ -41,11 +44,12 @@ class CredentialDetailScreen extends StatelessWidget {
             _InfoRow(label: 'Description', value: credential.description),
             _InfoRow(label: 'Category', value: credential.category),
             _InfoRow(label: 'Issuer', value: credential.issuer),
-            _InfoRow(label: 'Validity', value: period),
-            _InfoRow(label: 'Credential URL', value: credential.credentialUrl),
+            _InfoRow(label: 'Validity', value: validity),
             _InfoRow(
-              label: 'Credential Image URL',
-              value: credential.image ?? "-",
+              label: 'Credential URL',
+              value: credential.credentialUrl.isEmpty
+                  ? '-'
+                  : credential.credentialUrl,
             ),
           ],
         ),
@@ -53,7 +57,6 @@ class CredentialDetailScreen extends StatelessWidget {
     );
   }
 }
-
 class _InfoRow extends StatelessWidget {
   const _InfoRow({required this.label, required this.value});
 

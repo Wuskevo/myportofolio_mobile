@@ -111,7 +111,8 @@ class _CredentialListScreenState extends State<CredentialListScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => CredentialDetailScreen(credential: credential),
+                          builder: (_) =>
+                              CredentialDetailScreen(credential: credential),
                         ),
                       );
                     },
