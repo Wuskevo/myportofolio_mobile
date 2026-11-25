@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/screens/experience_list_screen.dart';
 import 'package:myportofolio_mobile/screens/experience_form_screen.dart';
 import 'package:myportofolio_mobile/screens/home_page_screen.dart';
 import 'package:myportofolio_mobile/screens/project_form_screen.dart';
@@ -52,7 +53,7 @@ class LeftDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.folder_outlined),
-            title: const Text('Projects'),
+            title: const Text('View Projects'),
             onTap: () {
               Navigator.pop(context); // closes the drawer
               Navigator.push(
@@ -77,13 +78,25 @@ class LeftDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.add_circle_outline),
-            title: const Text('Add Experience'),
-            // Navigate to the Add Experience screen
+            leading: const Icon(Icons.folder_outlined),
+            title: const Text('View Experiences'),
             onTap: () {
+              Navigator.pop(context); // close the drawer
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ExperienceFormPage()),
+                MaterialPageRoute(builder: (_) => const ExperienceListScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add_circle_outline),
+            title: const Text('Add Experience'),
+            onTap: () async {
+              final bool ok = await ensureLoggedIn(context);
+              if (!ok || !context.mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ExperienceFormPage()),
               );
             },
           ),

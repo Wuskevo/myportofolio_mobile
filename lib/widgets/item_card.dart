@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/screens/experience_list_screen.dart';
 import 'package:myportofolio_mobile/screens/experience_form_screen.dart';
 import 'package:myportofolio_mobile/screens/project_form_screen.dart';
 import 'package:myportofolio_mobile/screens/home_page_screen.dart';
@@ -41,10 +42,17 @@ class ItemCard extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => ProjectFormPage()),
               );
-            case ('Add Experience'):
+            case 'View Experiences':
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ExperienceFormPage()),
+                MaterialPageRoute(builder: (_) => const ExperienceListScreen()),
+              );
+            case 'Add Experience':
+              final bool ok = await ensureLoggedIn(context);
+              if (!ok || !context.mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ExperienceFormPage()),
               );
             case ('Logout'):
               final auth = context.read<AuthState>();
