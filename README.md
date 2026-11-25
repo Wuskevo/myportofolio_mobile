@@ -1,26 +1,46 @@
-# myportofolio_mobile
+# MyPortfolio Mobile
 
-A new Flutter project.
+[![CI](https://github.com/Wuskevo/myportofolio_mobile/actions/workflows/main.yaml/badge.svg)](https://github.com/Wuskevo/myportofolio_mobile/actions/workflows/main.yaml)
 
-## Don't Forget
+Flutter client for the MyPortfolio Django REST Framework backend.
 
-After any edits to data model classes (e.g., adding new attribute to project.dart), run:
-`dart run build_runner build`
-so the generated data model class will have the latest update.
+## Backend
 
-## Getting Started
+The Django backend source code is in the
+[Wuskevo/myportofolio repository](https://github.com/Wuskevo/myportofolio/).
+The app uses the `/api/v1/` endpoints for projects, experiences, credentials,
+and token authentication.
 
-This project is a starting point for a Flutter application.
+## Setup
 
-A few resources to get you started if this is your first Flutter project:
+Install Flutter, ensure the Django backend is running and reachable from your
+target device, then fetch dependencies and generate the JSON model code:
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```shell
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Set `API_BASE_URL` to the backend's base URL (the host root, without `/api/v1`).
+For an Android emulator with Django running on the development machine:
+
+```shell
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+```
+
+For Flutter web running on the same machine as Django:
+
+```shell
+flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8000
+```
+
+For a deployed backend, replace the local address with its publicly reachable
+base URL.
+
+## CI
+
+GitHub Actions runs the Flutter workflow and builds a release APK. The
+`build_apk` job uploads the APK as the `app-release-apk` artifact.
 
 # Reflection & AI Disclosure
 
@@ -268,7 +288,7 @@ Example of a value the form rejects: a required field containing only spaces (`"
 **Where Claude wrote code for me:**
 
 - The Project list and detail screens in Tutorial 10, Step 3.2, which I then adapted for Experience and Credential.
-- Full replacements for `experience_form_screen.dart` and `credential_form_screen.dart` (login guard, POST with the stored token, `showDatePicker`-based dates, 401 handling), after I sent my Assignment 8 mock forms and asked for fixes. I read through them, tested them against the backend, and [describe any changes you made].
+- Full replacements for `experience_form_screen.dart` and `credential_form_screen.dart` (login guard, POST with the stored token, `showDatePicker`-based dates, 401 handling), after I sent my Assignment 8 mock forms and asked for fixes. I read through them and tested them against the backend.
 - The `_dateToJson` helpers in `credential.dart`, needed because DRF's `DateField` rejects full ISO timestamps.
 - Claude acted as a search engine (on steroids) to help me answer the reflective questions.
 
@@ -290,6 +310,7 @@ Example of a value the form rejects: a required field containing only spaces (`"
 - The CI APK build failed twice for reasons that were mine: the Android Gradle Plugin version was too old for the current stable Flutter, and I had typed `user-permission` instead of `uses-permission` in `AndroidManifest.xml`. Claude diagnosed both from the logs, and I made the changes.
 - Claude's first URL validation idea (`hasAbsolutePath`) was unreliable, so I used a scheme and host check instead.
 - Credentials created from the app cannot have an image, because the JSON API cannot accept a file upload without a multipart request. This is a known limitation.
+- GitHub Copilot in VS Code helped remove generic homepage tap snackbars and add credential view/add navigation to the homepage and drawer.
 
 ### 1. Why @JsonSerializable and @JsonKey(includeToJson: false) instead of raw maps?
 They provide compile-time safety, especially against typos (e.g. "porject_name" appears as null in runtime). `fieldRename: snake` converts Dart's camelCase into the Django server's snake_case. `includeToJson: false` is used to skip server-generated fields like id, since sending that in a POST request would make Django reject it (id isn't editable). Concretely, all models have an id field. Moreover, were I to use raw maps, my frequent typos (as mentioned in the AI disclosure) would've been way more of a nuisance.
