@@ -256,3 +256,49 @@ The form is a `Form` inside a `SingleChildScrollView`, with `Padding` around a `
 - `validate()` runs every field's `validator`, shows the error text next to the invalid fields, and returns `true` only if all of them pass. Only then is the summary `AlertDialog` shown.
 
 Example of a value the form rejects: a required field containing only spaces (`"   "`), or an end date earlier than the start date. Choosing an input widget or keyboard type alone is insufficient because it only controls _how_ the user enters data, not _what_ is valid. A text field still accepts spaces or pasted text, and a date picker cannot know that one date must come after another. Only a `validator` can enforce these rules.
+
+## Assignment 9
+
+### AI Disclosure
+
+**Tool:** Claude (claude.ai), in a single chat session: https://claude.ai/share/e7d681a0-c095-4d91-870d-f1268aa88bc5.
+
+**How I worked:** I did not hand the whole assignment to Claude from the start. For Tutorial 10 and this assignment I wrote a first attempt myself (filling in the tutorial TODOs, then writing the Experience and Credential models, `ApiClient` methods, list and detail screens and wiring), ran it, and only then pasted my code and the error output into Claude and asked what was wrong. Most of Claude's contribution was reviewing my code and explaining errors. I applied the fixes myself and re-tested each one against my running Django server. 
+
+**Where Claude wrote code for me:**
+
+- The Project list and detail screens in Tutorial 10, Step 3.2, which I then adapted for Experience and Credential.
+- Full replacements for `experience_form_screen.dart` and `credential_form_screen.dart` (login guard, POST with the stored token, `showDatePicker`-based dates, 401 handling), after I sent my Assignment 8 mock forms and asked for fixes. I read through them, tested them against the backend, and [describe any changes you made].
+- The `_dateToJson` helpers in `credential.dart`, needed because DRF's `DateField` rejects full ISO timestamps.
+- Claude acted as a search engine (on steroids) to help me answer the reflective questions.
+
+**What Claude helped me find (I had written the original code):**
+
+- A missing `await` in `AuthState.logout()` and `LoginScreen._submit()`, so errors were never caught.
+- A wrong `Content-Type` header, a missing trailing slash on the logout URL, and a form-encoded body where JSON was needed in `ApiClient`.
+- The model fields `projectURL` / `projectImageURL`, which `FieldRename.snake` would have mapped to `project_u_r_l` instead of `project_url`.
+- A `ChangeNotifierProvider` creating a plain `ChangeNotifier` instead of `AuthState`.
+- Per-view `@authentication_classes([SessionAuthentication])` decorators in my Django views, which made them ignore the `Authorization: Token` header and return 403 "credentials were not provided".
+- Wrong types and typos in my Credential model (`Image` instead of `String?`, `dyanmic`), missing request bodies in `createExperience` / `createCredential`, and category values that did not match the Django choices.
+
+**Limitations of the AI, and manual fixes:**
+
+- Claude assumed my `REST_FRAMEWORK` setting was still the empty TODO. It was already filled in, and the real cause was the per-view decorators, which I only found after showing the response body in a SnackBar.
+- Claude first said that an invalid token returns 401. With `SessionAuthentication` listed first, DRF returns 403. It corrected itself later, and I put `TokenAuthentication` first.
+- Claude suggested `pushReplacement` for the "Projects" drawer tile. I questioned it, since it breaks the Back button, and we switched to closing the drawer and using `push`.
+- Claude's code snippets used `package:flutter/material.dart` and `myportfolio_mobile`, while my project uses `material_ui` and `myportofolio_mobile`. I had to fix the imports in every file, and `flutter analyze` failed CI until I replaced them.
+- The CI APK build failed twice for reasons that were mine: the Android Gradle Plugin version was too old for the current stable Flutter, and I had typed `user-permission` instead of `uses-permission` in `AndroidManifest.xml`. Claude diagnosed both from the logs, and I made the changes.
+- Claude's first URL validation idea (`hasAbsolutePath`) was unreliable, so I used a scheme and host check instead.
+- Credentials created from the app cannot have an image, because the JSON API cannot accept a file upload without a multipart request. This is a known limitation.
+
+### 1. Why @JsonSerializable and @JsonKey(includeToJson: false) instead of raw maps?
+They provide compile-time safety, especially against typos (e.g. "porject_name" appears as null in runtime). `fieldRename: snake` converts Dart's camelCase into the Django server's snake_case. `includeToJson: false` is used to skip server-generated fields like id, since sending that in a POST request would make Django reject it (id isn't editable). Concretely, all models have an id field. Moreover, were I to use raw maps, my frequent typos (as mentioned in the AI disclosure) would've been way more of a nuisance.
+
+### 2. Future in initState(), and ApiException instead of null
+`build()` runs over and over again, thus a request wouldd be repeatedly sent, whereas `initState()` runs once and waits. A new Future there will cause the loading spinner to flicker. Null, by definition, means unknown or undefined, nothing more to it. So, it'd be impossible to convey any meaning with just null besides its base semantics. An `ApiException` carries both the status code and the message so `FutureBuilder` can show the real error. Exceptions provide null-safety by cutting the null leak from the source basically.
+
+### 3. SessionAuthentication vs TokenAuthentication
+Sessions use a browser cookie to authenticate, suitable for websites. Meanwhile, tokens use a string the app sends itself, which suits the Flutter app. Both are needed so both the web and app work. Django Rest Framework accepts either method, so both can coexist. Removing sessions would break the Django website and its admin pages from Tutorial 04/07. More precisely, a session is like a stamp on your hand at a fair. The server remembers you, and the browser sends the cookie automatically. Token is like a ticket you show every time. The app puts it in the Authorization header (extra info sent with each request) itself.
+
+### 4. build (very_good_workflows), build_apk, and gitignoring *.g.dart
+`build` checks the quality of the code while `build_apk` (that runs after build) packs it into an installable Android app. `*.g.dart` files are machine-generated copies that CI can reproduce, so they don't belong in git as to not clutter it with non-source-code. CI still works because it runs `build_runner` first, which recreates those files on the CI machine. Without it, it'd fail with "file not found". `very_good_workflows` is a ready-made CI jobthat auto runs each push to the predetermined branches (in this case main/master)/pull request. It typically installs Flutter, gets packages, checks formatting, runs a code-quality checker, and runs tests, often with a coverage check. 
