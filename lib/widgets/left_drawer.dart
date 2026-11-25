@@ -1,4 +1,6 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/screens/credential_form_screen.dart';
+import 'package:myportofolio_mobile/screens/credential_list_screen.dart';
 import 'package:myportofolio_mobile/screens/experience_list_screen.dart';
 import 'package:myportofolio_mobile/screens/experience_form_screen.dart';
 import 'package:myportofolio_mobile/screens/home_page_screen.dart';
@@ -97,6 +99,29 @@ class LeftDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ExperienceFormPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.workspace_premium_outlined),
+            title: const Text('View Credentials'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CredentialListScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add_circle_outline),
+            title: const Text('Add Credential'),
+            onTap: () async {
+              final bool ok = await ensureLoggedIn(context);
+              if (!ok || !context.mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CredentialFormPage()),
               );
             },
           ),

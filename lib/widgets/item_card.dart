@@ -1,4 +1,6 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/screens/credential_form_screen.dart';
+import 'package:myportofolio_mobile/screens/credential_list_screen.dart';
 import 'package:myportofolio_mobile/screens/experience_list_screen.dart';
 import 'package:myportofolio_mobile/screens/experience_form_screen.dart';
 import 'package:myportofolio_mobile/screens/project_form_screen.dart';
@@ -20,12 +22,6 @@ class ItemCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () async {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text("You pressed the ${item.name} button!")),
-            );
-
           switch (item.name) {
             case ('View Projects'):
               Navigator.pop(context); // closes the drawer
@@ -53,6 +49,19 @@ class ItemCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ExperienceFormPage()),
+              );
+            case 'View Credentials':
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CredentialListScreen()),
+              );
+            case 'Add Credential':
+              final bool ok = await ensureLoggedIn(context);
+              if (!ok || !context.mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CredentialFormPage()),
               );
             case ('Logout'):
               final auth = context.read<AuthState>();

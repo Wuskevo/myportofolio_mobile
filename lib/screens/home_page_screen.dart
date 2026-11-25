@@ -23,6 +23,8 @@ class MyHomePage extends StatelessWidget {
     ItemHomepage("Logout", Icons.logout, Colors.red),
     ItemHomepage("View Experiences", Icons.folder, Colors.blue),
     ItemHomepage("Add Experience", Icons.add_circle, Colors.green),
+    ItemHomepage("View Credentials", Icons.workspace_premium, Colors.blue),
+    ItemHomepage("Add Credential", Icons.add_circle, Colors.green),
   ];
 
   @override
